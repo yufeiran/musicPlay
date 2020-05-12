@@ -20,6 +20,7 @@ MCIDEVICEID wDevioceId;
 
 int BackgroundMusicVol = 500;
 int SoundEffectVol = 500;
+bool endflag = false;
 enum MusicType { backgroundMusic, soundEffect };
 class SoundManager
 {
@@ -29,8 +30,19 @@ public:
 	void SetSoundEffectVol(int vol);
 
 	vector<thread> musicList;
+
+	~SoundManager();
 };
 
+ SoundManager::~SoundManager()
+{
+	 endflag = true;
+	 for (int i = 0; i < musicList.size(); i++)
+	 {
+		 musicList[i].join();
+	 }
+	 musicList.clear();
+}
 
 
 DWORD MCIPlay(DWORD DeviceID, MusicType musicType)
@@ -128,6 +140,11 @@ DWORD SOUND_RUN(const CString& strPath,MusicType musicType)
 					MCISetVolume(vol, wIDDevioce);
 				}
 			}
+			if (endflag == true)  //看到终止标准位就退出
+			{
+				Close_MCI(wIDDevioce);
+				return 0;
+			}
 
 			Sleep(100);
 		}
@@ -176,68 +193,75 @@ void SoundManager::SetSoundEffectVol(int vol)
 
 int main()
 {
-	SoundManager SM;
-
-	//musicList.push_back(thread(SOUND_RUN, "sound/starlight.mp3",backgroundMusic));
-	SM.playSound("sound/starlight.mp3", backgroundMusic);
-
-	while (1)
 	{
-		char command;
-		command=_getch();
-		if (command == 'r')
-		{
-			SM.playSound("sound/getRice.mp3", soundEffect);
+		SoundManager SM;
 
-			cout << "New Music" << endl;
-		}
-		if (command == 'm')
-		{
-			SM.playSound("sound/makeDeal.mp3", soundEffect);
+		//musicList.push_back(thread(SOUND_RUN, "sound/starlight.mp3",backgroundMusic));
+		SM.playSound("sound/starlight.mp3", backgroundMusic);
 
-			cout << "New Music" << endl;
-		}
-
-		if (command == 'u')
+		while (1)
 		{
-			
-			BackgroundMusicVol += 100;
-			if (BackgroundMusicVol > 1000)
+			char command;
+			command = _getch();
+			if (command == 'r')
 			{
-				BackgroundMusicVol = 1000;
+				SM.playSound("sound/getRice.mp3", soundEffect);
+
+				cout << "New Music" << endl;
 			}
-			SM.SetBackgroundMusicVol(BackgroundMusicVol);
-		}
-		if (command == 'd')
-		{
-			BackgroundMusicVol -= 100;
-			if (BackgroundMusicVol < 0)
+			if (command == 'm')
 			{
-				BackgroundMusicVol = 0;
+				SM.playSound("sound/makeDeal.mp3", soundEffect);
+
+				cout << "New Music" << endl;
 			}
-			SM.SetBackgroundMusicVol(BackgroundMusicVol);
-		}
-		if (command == 'w')
-		{
-			SoundEffectVol += 100;
-			if (SoundEffectVol > 1000)
+
+			if (command == 'u')
 			{
-				SoundEffectVol = 1000;
+
+				BackgroundMusicVol += 100;
+				if (BackgroundMusicVol > 1000)
+				{
+					BackgroundMusicVol = 1000;
+				}
+				SM.SetBackgroundMusicVol(BackgroundMusicVol);
 			}
-			SM.SetSoundEffectVol(SoundEffectVol);
-		}
-		if (command == 's')
-		{
-			SoundEffectVol -= 100;
-			if (SoundEffectVol < 0)
+			if (command == 'd')
 			{
-				SoundEffectVol = 0;
+				BackgroundMusicVol -= 100;
+				if (BackgroundMusicVol < 0)
+				{
+					BackgroundMusicVol = 0;
+				}
+				SM.SetBackgroundMusicVol(BackgroundMusicVol);
 			}
-			SM.SetSoundEffectVol(SoundEffectVol);
-		}
+			if (command == 'w')
+			{
+				SoundEffectVol += 100;
+				if (SoundEffectVol > 1000)
+				{
+					SoundEffectVol = 1000;
+				}
+				SM.SetSoundEffectVol(SoundEffectVol);
+			}
+			if (command == 's')
+			{
+				SoundEffectVol -= 100;
+				if (SoundEffectVol < 0)
+				{
+					SoundEffectVol = 0;
+				}
+				SM.SetSoundEffectVol(SoundEffectVol);
+			}
+			if (command == 'e')
+			{
+				break;
+			}
 
 
+		}
 	}
+	
 
 	return 0;
 }
