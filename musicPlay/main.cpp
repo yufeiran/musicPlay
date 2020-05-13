@@ -51,12 +51,12 @@ DWORD MCIPlay(DWORD DeviceID, MusicType musicType)
 	DWORD opReturn;
 	if (musicType == soundEffect)
 	{
-		opReturn = mciSendCommand(wDevioceId, MCI_PLAY, MCI_NOTIFY, (DWORD)&mciPP);
+		opReturn = mciSendCommand(wDevioceId, MCI_PLAY, MCI_NOTIFY, (DWORD_PTR)&mciPP);
 		return opReturn;
 	}
 	else if (musicType == backgroundMusic)
 	{
-		opReturn = mciSendCommand(wDevioceId, MCI_PLAY, MCI_DGV_PLAY_REPEAT, (DWORD)&mciPP);
+		opReturn = mciSendCommand(wDevioceId, MCI_PLAY, MCI_DGV_PLAY_REPEAT, (DWORD_PTR)&mciPP);
 		return opReturn;
 	}
 
@@ -74,7 +74,7 @@ DWORD MCISetVolume(DWORD dwVol,DWORD DeviceID)
 	mciSetAudioPara.dwCallback = NULL;
 	mciSetAudioPara.dwItem = MCI_DGV_SETAUDIO_VOLUME;
 	mciSetAudioPara.dwValue = dwVol; //音量0-1000
-	DWORD dwReturn = mciSendCommand(DeviceID,MCI_SETAUDIO, MCI_DGV_SETAUDIO_VALUE | MCI_DGV_SETAUDIO_ITEM, (DWORD)(LPVOID)&mciSetAudioPara);
+	DWORD dwReturn = mciSendCommand(DeviceID,MCI_SETAUDIO, MCI_DGV_SETAUDIO_VALUE | MCI_DGV_SETAUDIO_ITEM, (DWORD_PTR)(LPVOID)&mciSetAudioPara);
 	return dwReturn;
 }
 
@@ -90,7 +90,7 @@ DWORD SOUND_RUN(const CString& strPath,MusicType musicType)
 
 	mciOP.lpstrDeviceType = NULL;
 	mciOP.lpstrElementName = strPath; //设置打开的文件的名称
-	opReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT, (DWORD)(LPVOID)&mciOP);
+	opReturn = mciSendCommand(NULL, MCI_OPEN, MCI_OPEN_ELEMENT, (DWORD_PTR)(LPVOID)&mciOP);
 	if (opReturn == 0)
 	{
 		wIDDevioce = mciOP.wDeviceID; //播放设备ID
@@ -111,7 +111,7 @@ DWORD SOUND_RUN(const CString& strPath,MusicType musicType)
 		{
 			MCI_STATUS_PARMS mciStatus;
 			mciStatus.dwItem = MCI_STATUS_MODE;
-			DWORD sta2Return = mciSendCommand(wIDDevioce, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)(LPVOID)&mciStatus);
+			DWORD sta2Return = mciSendCommand(wIDDevioce, MCI_STATUS, MCI_STATUS_ITEM, (DWORD_PTR)(LPVOID)&mciStatus);
 			DWORD music_playstyle = mciStatus.dwReturn; //获得当前播放工作模式 播放 526 暂停 525
 			cout << wIDDevioce << ":" << music_playstyle << endl;
 			if (music_playstyle == 525)

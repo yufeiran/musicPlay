@@ -7,3 +7,6 @@
 /.vs/musicPlay/v16
 /Debug/musicPlay.pdb
 /Debug/musicPlay.ilk
+/musicPlay/x64/Debug/musicPlay.tlog
+/musicPlay/x64/Debug
+/x64/Debug
